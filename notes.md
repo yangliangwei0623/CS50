@@ -2,7 +2,7 @@
 
 **print函数**
 
-- ooking at this documentation, you’ll learn that the `print` function automatically includes the argument `end='\n'`. This `\n` indicates that the `print` function will automatically create a line break when run. The function takes an argument called `end`, and the default is to create a new line.
+- looking at this documentation, you’ll learn that the `print` function automatically includes the argument `end='\n'`. This `\n` indicates that the `print` function will automatically create a line break when run. The function takes an argument called `end`, and the default is to create a new line.
 
 - However, we can technically provide an argument for `end` ourselves such that a new line is not created!
 
