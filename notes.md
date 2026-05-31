@@ -205,3 +205,285 @@ json格式
   }
 }
 ```
+
+# Unit Tests
+
+pytest的使用
+
+# Object-Oriented Programming
+
+**tuple and list**
+
+A `tuple` is a sequence of values. Unlike a `list`, a `tuple` can’t be modified.可用[]访问
+
+```python
+def main():
+    student = get_student()
+    if student[0] == "Padma":
+        student[1] = "Ravenclaw"#tuple is immutable
+    print(f"{student[0]} from {student[1]}")
+
+
+def get_student():
+    name = input("Name: ")
+    house = input("House: ")
+    return name, house#return [name, house]，this is a list，also can be visitied by []
+
+
+if __name__ == "__main__":
+    main()
+    
+```
+
+**dict**
+
+```python
+def main():
+    student = get_student()
+    print(f"{student['name']} from {student['house']}")
+
+
+def get_student():
+    name = input("Name: ")
+    house = input("House: ")
+    return {"name": name, "house": house}#Notice we can utilize {} braces in the return statement to create the dictionary and return it all in the same line.
+
+
+if __name__ == "__main__":
+    main()
+```
+
+**classes**
+
+```python
+class Student:
+    ...
+
+def main():
+    student = get_student()
+    print(f"{student.name} from {student.house}")
+
+
+def get_student():
+    student = Student()
+    student.name = input("Name: ")
+    student.house = input("House: ")
+    return student
+
+
+if __name__ == "__main__":
+    main()
+```
+
+可以在**运行时**随时为一个对象甚至一个类动态地添加、修改或删除属性和方法
+
+```python
+def __str__(self):
+    #欲将对象字符串化需要写明的函数
+```
+
+
+
+**raise**
+
+```python
+class Student:
+    def __init__(self, name, house):
+        try:
+            if not name:
+                raise ValueError("Missing name")
+            if house not in ["Gryffindor", "Hufflepuff", "Ravenclaw", "Slytherin"]:
+                raise ValueError("Invalid house")
+            self.name = name
+            self.house = house
+        except ValueError as e:
+            print(e)
+            exit(1)   
+
+
+def main():
+    student = get_student()
+    print(f"{student.name} from {student.house}")
+
+
+def get_student():
+    name = input("Name: ")
+    house = input("House: ")
+    return Student(name, house)
+
+
+if __name__ == "__main__":
+    main()
+```
+
+**Decrators**
+
+```python
+class Student:
+    def __init__(self, name, house):
+        self.name = name
+        self.house = house
+
+    def __str__(self):
+        return f"{self.name} from {self.house}"
+
+    # Getter for name
+    @property
+    def name(self):
+        return self._name
+
+    # Setter for name
+    @name.setter
+    def name(self, name):
+        if not name:
+            raise ValueError("Invalid name")
+        self._name = name
+
+    @property
+    def house(self):
+        return self._house
+
+    @house.setter
+    def house(self, house):
+        if house not in ["Gryffindor", "Hufflepuff", "Ravenclaw", "Slytherin"]:
+            raise ValueError("Invalid house")
+        self._house = house
+
+
+def main():
+    student = get_student()
+    print(student)
+
+
+def get_student():
+    name = input("Name: ")
+    house = input("House: ")
+    return Student(name, house)
+
+
+if __name__ == "__main__":
+    main()
+    
+#Notice how we’ve written @property above a function called house. Doing so defines house as a property of our class. With house as a property, we gain the ability to define how some attribute of our class, _house, should be set and retrieved. Indeed, we can now define a function called a “setter”, via @house.setter, which will be called whenever the house property is set—for example, with student.house = "Gryffindor". Here, we’ve made our setter validate values of house for us. Notice how we raise a ValueError if the value of house is not any of the Harry Potter houses, otherwise, we’ll use house to update the value of _house. Why _house and not house? house is a property of our class, with functions via which a user attempts to set our class attribute. _house is that class attribute itself. The leading underscore, _, indicates to users they need not (and indeed, shouldn’t!) modify this value directly. _house should only be set through the house setter. Notice how the house property simply returns that value of _house, our class attribute that has presumably been validated using our house setter. When a user calls student.house, they’re getting the value of _house through our house “getter”.
+```
+
+**Class Methods**
+
+```python
+#ometimes, we want to add functionality to a class itself, not to instances of that class.
+#@classmethod is a function that we can use to add functionality to a class as a whole.
+import random
+
+
+class Hat:
+
+    houses = ["Gryffindor", "Hufflepuff", "Ravenclaw", "Slytherin"]
+
+    @classmethod
+    def sort(cls, name):
+        print(name, "is in", random.choice(cls.houses))
+
+
+Hat.sort("Harry")
+#otice how the __init__ method is removed because we don’t need to instantiate a hat anywhere in our code. self, therefore, is no longer relevant and is removed. We specify this sort as a @classmethod, replacing self with cls. Finally, notice how Hat is capitalized by convention near the end of this code, because this is the name of our class.
+```
+
+**Inheritance**
+
+```python
+class Wizard:
+    def __init__(self, name):
+        if not name:
+            raise ValueError("Missing name")
+        self.name = name
+
+    ...
+
+
+class Student(Wizard):
+    def __init__(self, name, house):
+        super().__init__(name)
+        self.house = house
+
+    ...
+
+
+class Professor(Wizard):
+    def __init__(self, name, subject):
+        super().__init__(name)
+        self.subject = subject
+
+    ...
+
+
+wizard = Wizard("Albus")
+student = Student("Harry", "Gryffindor")
+professor = Professor("Severus", "Defense Against the Dark Arts")
+...
+```
+
+**Operator Overloading**
+
+e.g. 在类中重写`__add__`函数就可以重载+，其他类似，需要使用时可查阅
+
+# Et cetera
+
+**if name == "main":**
+
+```python
+def my_main_logic():
+    print("Hello Python")
+
+# 这才是一个“开关”
+if __name__ == "__main__":
+    my_main_logic()
+    
+#直接运行文件时，Python 解释器会在后台悄悄把一个内置变量 __name__ 赋值为字符串 "__main__"。此时 if 条件成立
+#你的主逻辑被执行从另一个文件中 import 这个文件时，Python 依然会从上到下读取该文件，但此时 __name__ 的值会被设为该文件的文件名（例如 "calculator"）。此时 if 条件不成立，主逻辑不会被意外触发，仅仅是加载了里面的函数和类供你使用。
+```
+
+**with**
+
+```python
+#核心作用是自动管理资源（也被称为“上下文管理器”），确保在你用完某个资源后，系统能自动帮你做好“善后清理”工作，即使中间程序报错崩溃了也不例外。
+file = open("data.txt", "w")
+file.write("hello world")
+file.close() # 必须手动关闭文件！
+with open("data.txt", "w") as file:
+    file.write("hello world")
+# 只要缩进结束（离开 with 块），文件就会自动被安全关闭！
+
+任何可以使用 with 关键字调用的对象，都必须实现上下文管理协议。该协议要求对象在内部定义两个魔术方法（Magic Methods）：
+
+__enter__(self)：在进入 with 代码块之前被调用。它的主要任务是分配或获取资源，并将其返回。返回的值会被绑定到 as 后面的变量上（如果有的话）。
+
+__exit__(self, exc_type, exc_val, exc_tb)：在离开 with 代码块时（无论是因为代码正常执行完毕，还是因为抛出了异常）被严格调用。它的主要任务是执行清理工作（如关闭文件、释放锁、断开连接等）。如果代码块内发生异常，这三个参数将分别接收异常的类型、值和追踪栈（Traceback）；如果 __exit__ 返回 True，则异常会被吞噬（抑制），否则异常将继续向上抛出。
+
+```
+
+**包**
+
+文件夹下面有一个名为
+
+```python
+__init__.py(__是 _ _)
+```
+
+该文件夹便被声明为包
+
+模块与包
+
+1. **模块 (Module)：最小的独立单位** 本质上就是一个单独的 `.py` 文件。里面包含了 Python 的函数、类和变量定义。它是代码重用的最基础单元。
+2. **包 (Package)：文件系统的目录结构** 本质上是一个包含了多个模块（`.py` 文件）的**文件夹**。为了让 Python 将这个普通的文件夹识别为一个“包”，文件夹内部通常需要包含一个特殊的 `__init__.py` 文件。
+
+**包 (Package) 的核心作用**
+
+随着代码量的增加，把所有功能都塞进一个 `.py` 文件（模块）是不现实的。我们必须将代码拆分到不同的文件夹中，这就催生了“包”的作用：
+
+- **隔离命名空间（避免命名冲突）** 这是包最关键的作用。在大型项目中，不同的开发者可能会创建同名的文件（比如大家都喜欢用 `utils.py` 或 `config.py`）。如果没有包，这些同名模块就会互相覆盖。有了包结构之后，`network_pkg.utils` 和 `database_pkg.utils` 就是两个完全独立的东西，井水不犯河水。
+- **组织与层级化代码** 就像你在电脑上用文件夹整理照片和文档一样，包允许你按照业务逻辑或功能模块将代码分门别类。通过点号 (`.`) 来访问，例如 `from app.models.user import User`，这种层级结构让项目的架构一目了然，极大地提升了可维护性。
+- **集中处理初始化逻辑** 当一个包被导入时，它目录下的 `__init__.py` 文件会自动执行。你可以利用这个特性在 `__init__.py` 中编写初始化代码（例如建立数据库连接、加载配置文件）。
+- **控制暴露的接口** 在 `__init__.py` 中，你可以通过定义特殊的 `__all__` 变量，来精确控制当外部使用者执行 `from your_package import *` 时，到底哪些子模块会被公开出去，从而将内部的实现细节隐藏起来。
+
+
+
