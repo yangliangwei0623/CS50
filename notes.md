@@ -316,7 +316,7 @@ if __name__ == "__main__":
     main()
 ```
 
-**Decrators**
+**Decorators**
 
 ```python
 class Student:
@@ -328,9 +328,9 @@ class Student:
         return f"{self.name} from {self.house}"
 
     # Getter for name
-    @property
+    @property#getter 函数命名成什么，外部使用者就必须用什么名字来访问它。
     def name(self):
-        return self._name
+        return self._name#在setter和getter对数据进行操作都要带下划线，其他地方用不带下划线的，这样在其他地方的set和get就可以经过相关逻辑校验
 
     # Setter for name
     @name.setter
@@ -485,5 +485,233 @@ __init__.py(__是 _ _)
 - **集中处理初始化逻辑** 当一个包被导入时，它目录下的 `__init__.py` 文件会自动执行。你可以利用这个特性在 `__init__.py` 中编写初始化代码（例如建立数据库连接、加载配置文件）。
 - **控制暴露的接口** 在 `__init__.py` 中，你可以通过定义特殊的 `__all__` 变量，来精确控制当外部使用者执行 `from your_package import *` 时，到底哪些子模块会被公开出去，从而将内部的实现细节隐藏起来。
 
+**set**
 
+```python
+students = [
+    {"name": "Hermione", "house": "Gryffindor"},
+    {"name": "Harry", "house": "Gryffindor"},
+    {"name": "Ron", "house": "Gryffindor"},
+    {"name": "Draco", "house": "Slytherin"},
+    {"name": "Padma", "house": "Ravenclaw"},
+]
+
+houses = set()
+for student in students:
+    houses.add(student["house"])#Notice how no checking needs to be included to ensure there are no duplicates. The set object takes care of this for us automatically.
+
+for house in sorted(houses):
+    print(house)
+```
+
+**Global Variables**
+
+尽量少使用global variables，用类来代替（封装与其相关的操作）,用的话注意在函数内部对全局变量再赋值时，需要加上global xxx.
+
+```python
+balance = 0
+
+
+def main():
+    print("Balance:", balance)
+    deposit(100)
+    withdraw(50)
+    print("Balance:", balance)
+
+
+def deposit(n):
+    global balance#不加会报错
+    balance += n
+
+
+def withdraw(n):
+    global balance
+    balance -= n
+
+
+if __name__ == "__main__":
+    main()
+```
+
+**Constants**
+
+Constants are typically denoted by capital variable names and are placed at the top of our code. Though this *looks* like a constant, in reality, Python actually has no mechanism to prevent us from changing that value within our code! Instead, you’re on the honor system: if a variable name is written in all caps, just don’t change it!
+
+**type hints**
+
+python不进行隐式转换，遇到类型不匹配会直接报告Type Error（但是是动态类型，即允许变量的类型在执行过程中发生改变，给变量赋什么类型的值它就是什么类型）
+
+可以用下面这样的方式表明类型，然后通过`mypy`来检查（对执行没有任何影响）
+
+```python
+def meow(n: int) -> str:
+    return "meow\n" * n
+
+
+number: int = int(input("Number: "))
+meows: str = meow(number)
+print(meows, end="")
+```
+
+**Docstrings**（文档字符串）
+
+```python
+def meow(n):
+    """Meow n times."""
+    return "meow\n" * n
+
+"""
+它和普通的 # 注释有什么区别？ 普通的 # 注释主要是给写代码的人看的，Python 运行代码时会直接忽略它。而 Docstring 是附着在函数上的官方说明，Python 会把它当作函数的一个特殊属性（__doc__）保留下来。当你在集成开发环境（IDE，比如 VS Code 或 PyCharm）中将鼠标悬停在 meow 函数上时，IDE 就会弹出 "Meow n times." 这个提示。
+"""
+
+(reStructuredText (reST) / Sphinx 风格,可通过Sphinx工具一键生成文档)
+"""
+Meow n times.  <-- 第一行：用一句话简述函数的作用。
+
+:param n: Number of times to meow  <-- 【参数描述】告诉读者参数 n 代表什么（喵的次数）。
+:type n: int                       <-- 【参数类型】规定参数 n 必须是一个整数（integer）。
+:raise TypeError: If n is not an int <-- 【异常说明】警告使用者：如果传进来的 n 不是整数，函数会抛出 TypeError 错误。
+:return: A string of n meows, one per line <-- 【返回值描述】说明函数最终会输出什么（返回包含 n 个 meow 的字符串，每行一个）。
+:rtype: str                        <-- 【返回值类型】规定返回的结果是一个字符串（string）。
+"""
+```
+
+**unpacking**
+
+```python
+def total(galleons, sickles, knuts):
+    return (galleons * 17 + sickles) * 29 + knuts
+
+
+coins = [100, 50, 25]
+
+print(total(*coins), "Knuts")
+
+
+
+def total(galleons, sickles, knuts):
+    return (galleons * 17 + sickles) * 29 + knuts
+
+coins = {"galleons": 100, "sickles": 50, "knuts": 25}
+
+print(total(**coins), "Knuts")#字典中的key值要和参数名相对应，顺序无所谓
+```
+
+**args and kwargs**
+
+- `args` are positional arguments, such as those we provide to print like `print("Hello", "World")`.
+- `kwargs` are named arguments, or “keyword arguments”, such as those we provide to print like `print(end="")`.
+
+```python
+def f(*args, **kwargs):# *在这里相当于打包符,args存储为列表，kwargs存储为字典
+    print("Positional:", args)
+
+f(100, 50, 25)#输出100,50,25
+```
+
+```python
+def f(*args, **kwargs):
+    print("Named:", kwargs)
+
+
+f(galleons=100, sickles=50, knuts=25)#输出  Named: {'galleons': 100, 'sickles': 50, 'knuts': 25}
+```
+
+**map**
+
+```python
+def main():
+    yell("This", "is", "CS50")
+
+
+def yell(*words):
+    uppercased = map(str.upper, words)
+    """
+    Notice how map takes two arguments. First, it takes a function we want applied to every element of a list. Second, it takes that list itself, to which we’ll apply the aforementioned function. Hence, all words in words will be handed to the str.upper function and returned to uppercased.
+    """
+    print(*uppercased)
+
+
+if __name__ == "__main__":
+    main()
+```
+
+**List Comprehensions**
+
+list comprehensions allow you to create a list on the fly in one elegant one-liner.
+
+```python
+squares = [i * i for i in range(10)]
+print(squares)  # [ 表达式（函数） for 变量 in 可迭代对象 ]
+```
+
+```python
+even_squares = [i * i for i in range(10) if i % 2 == 0]
+print(even_squares)  # [0, 4, 16, 36, 64]，[ 表达式 for 变量 in 可迭代对象 if 筛选条件 ]
+```
+
+**filter**
+
+```python
+students = [
+    {"name": "Hermione", "house": "Gryffindor"},
+    {"name": "Harry", "house": "Gryffindor"},
+    {"name": "Ron", "house": "Gryffindor"},
+    {"name": "Draco", "house": "Slytherin"},
+]
+
+def is_gryffindor(s):
+    return s["house"] == "Gryffindor"
+
+gryffindors = filter(is_gryffindor, students)
+
+for gryffindor in sorted(gryffindors, key=lambda s: s["name"]):
+    print(gryffindor["name"])
+```
+
+
+
+lambda 参数: 返回值表达式（lambda表达式格式）
+
+```python
+students = [
+    {"name": "Hermione", "house": "Gryffindor"},
+    {"name": "Harry", "house": "Gryffindor"},
+    {"name": "Ron", "house": "Gryffindor"},
+    {"name": "Draco", "house": "Slytherin"},
+]
+
+
+gryffindors = filter(lambda s: s["house"] == "Gryffindor", students)#filter can also use lambda functions
+
+for gryffindor in sorted(gryffindors, key=lambda s: s["name"]):
+    print(gryffindor["name"])
+```
+
+**Generators and Iterators**
+
+```python
+def main():
+    n = int(input("What's n? "))
+    for s in sheep(n):
+        print(s)
+
+def sheep(n):
+    for i in range(n):
+        yield "🐑" * i #先算出一个结果交给你，然后在这里按暂停，等下次来要的时候，我再接着往下算。”（避免一次要算太多导致内内存爆满，无论你要 10 只羊还是 10 亿只羊，使用 yield 的生成器在任何时刻，内存中永远只有当前这一只羊的数据。这种机制在计算机科学中被称为 “惰性求值 / 延迟计算” (Lazy Evaluation)。）
+
+if __name__ == "__main__":
+    main()
+"""
+for 循环向 sheep 索要第 1 只羊。
+
+sheep 运行到 yield，交出第 1 只羊，并原地暂停。
+
+main 函数收到并 print 打印在屏幕上。此时，第 1 只羊的数据就被内存丢弃了。
+
+for 循环向 sheep 索要第 2 只羊。
+
+sheep 解除暂停，继续循环，交出第 2 只羊，再次暂停。
+"""
+```
 
