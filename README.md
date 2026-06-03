@@ -1,2 +1,4 @@
 # CS50
 自己学习CS50的记录
+看完了出了正则表达式以外内容的notes
+选择性地完成了每个week的problem set
